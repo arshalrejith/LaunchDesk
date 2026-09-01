@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your Website Dashboard</title>
+<meta name="description" content="A plain-language guide to every part of your website dashboard — no technical background needed.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Karla:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FBF8F3;
+    --surface:#FFFFFF;
+    --surface-2:#F3EEE4;
+    --ink:#26221C;
+    --ink-dim:#6B6154;
+    --accent:#1F7A6C;
+    --accent-ink:#FFFFFF;
+    --accent-soft:#E1EFEC;
+    --good:#2F7A4F;
+    --good-soft:#E3F1E7;
+    --warn:#B8792A;
+    --warn-soft:#F6ECDC;
+    --line:#E7DFD0;
+    --focus:#1F7A6C;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#1B1815; --surface:#242019; --surface-2:#2C2720;
+      --ink:#F3EEE6; --ink-dim:#B8AC9B;
+      --accent:#4FB3A0; --accent-ink:#0E211D; --accent-soft:#233330;
+      --good:#5FBD84; --good-soft:#1E3226;
+      --warn:#E0AF5C; --warn-soft:#3A2F1B;
+      --line:#3A342A; --focus:#4FB3A0;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#1B1815; --surface:#242019; --surface-2:#2C2720;
+    --ink:#F3EEE6; --ink-dim:#B8AC9B;
+    --accent:#4FB3A0; --accent-ink:#0E211D; --accent-soft:#233330;
+    --good:#5FBD84; --good-soft:#1E3226;
+    --warn:#E0AF5C; --warn-soft:#3A2F1B;
+    --line:#3A342A; --focus:#4FB3A0;
+  }
+  *{box-sizing:border-box;}
+  @media (prefers-reduced-motion: reduce){
+    *{scroll-behavior:auto !important; animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
+  }
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Karla", ui-sans-serif, system-ui, sans-serif;
+    line-height:1.65; font-size:1.05rem; -webkit-font-smoothing:antialiased;
+  }
+  a{ color:var(--accent); }
+  :focus-visible{ outline:2px solid var(--focus); outline-offset:2px; }
+  h1,h2,h3{ font-family:"Sora", ui-sans-serif, sans-serif; text-wrap:balance; margin:0; }
+  .wrap{ max-width:840px; margin:0 auto; padding-inline:clamp(1.25rem,5vw,2rem); }
+  .eyebrow{ text-transform:uppercase; letter-spacing:0.1em; font-size:0.75rem; font-weight:600; color:var(--accent); }
+
+  header.hero{ padding-block:clamp(2.5rem,7vw,3.5rem) 2rem; border-bottom:1px solid var(--line); }
+  header.hero h1{ font-size:clamp(1.9rem,4.5vw,2.6rem); margin-top:0.5rem; }
+  header.hero p{ margin-top:0.75rem; max-width:56ch; color:var(--ink-dim); font-size:1.05rem; }
+  .login-box{
+    margin-top:1.5rem; display:inline-flex; align-items:center; gap:0.75rem;
+    background:var(--accent-soft); border-radius:12px; padding:0.9rem 1.25rem;
+  }
+  .login-box code{ font-weight:600; }
+
+  nav.jump{ display:flex; flex-wrap:wrap; gap:0.5rem; padding-block:1.5rem; border-bottom:1px solid var(--line); }
+  nav.jump a{
+    text-decoration:none; font-size:0.85rem; font-weight:600; color:var(--ink);
+    background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:0.4rem 0.9rem;
+  }
+  nav.jump a:hover{ border-color:var(--accent); color:var(--accent); }
+
+  section{ padding-block:2.5rem; border-bottom:1px solid var(--line); }
+  section h2{ font-size:clamp(1.4rem,3vw,1.7rem); }
+  section > p.lede{ margin-top:0.5rem; color:var(--ink-dim); max-width:60ch; }
+
+  .card-grid{ display:grid; grid-template-columns:1fr; gap:1rem; margin-top:1.5rem; }
+  @media (min-width:640px){ .card-grid{ grid-template-columns:1fr 1fr; } }
+  .card{ background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:1.4rem; }
+  .card h3{ font-size:1.05rem; display:flex; align-items:center; gap:0.5rem; }
+  .card p{ margin:0.5rem 0 0; color:var(--ink-dim); font-size:0.95rem; }
+  .card .tag{ font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--accent); }
+
+  .contact-links{ display:inline-flex; gap:0.4rem; }
+  .contact-links a{
+    display:inline-flex; align-items:center; gap:0.3rem; text-decoration:none; font-weight:600;
+    background:var(--accent-soft); color:var(--accent); border-radius:999px; padding:0.15rem 0.65rem; font-size:0.92rem;
+  }
+  .contact-links a:hover{ text-decoration:underline; }
+
+  .steps{ counter-reset:step; margin-top:1.5rem; display:flex; flex-direction:column; gap:1rem; }
+  .step{ display:grid; grid-template-columns:2.25rem 1fr; gap:1rem; }
+  .step .num{
+    counter-increment:step; width:2.25rem; height:2.25rem; border-radius:50%;
+    background:var(--accent); color:var(--accent-ink); display:flex; align-items:center; justify-content:center;
+    font-family:"Sora", sans-serif; font-weight:700;
+  }
+  .step .num::before{ content:counter(step); }
+  .step h3{ font-size:1rem; }
+  .step p{ margin:0.3rem 0 0; color:var(--ink-dim); font-size:0.95rem; }
+
+  .callout{ background:var(--warn-soft); border-radius:12px; padding:1rem 1.25rem; margin-top:1.5rem; }
+  .callout p{ margin:0; color:var(--ink); font-size:0.95rem; }
+
+  details{ background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:1rem 1.25rem; margin-top:0.75rem; }
+  details summary{ font-weight:600; cursor:pointer; font-family:"Sora", sans-serif; font-size:0.98rem; }
+  details p{ margin:0.75rem 0 0; color:var(--ink-dim); font-size:0.95rem; }
+
+  footer{ padding-block:2.5rem; text-align:center; font-size:0.85rem; color:var(--ink-dim); }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Your website, explained simply</p>
+    <h1>Everything your dashboard can do</h1>
+    <p>No coding, nothing technical — this walks through every part of your dashboard in plain language, in the order you'll actually use it.</p>
+    <div class="login-box">
+      <span>🔑</span>
+      <span>Sign in any time at <code>/login</code> with the email and password you were given.</span>
+    </div>
+  </div>
+</header>
+
+<nav class="jump">
+  <div class="wrap" style="display:flex; flex-wrap:wrap; gap:0.5rem;">
+    <a href="#start">Getting Started</a>
+    <a href="#tour">Your Dashboard</a>
+    <a href="#publish">Publishing</a>
+    <a href="#faq">Questions</a>
+  </div>
+</nav>
+
+<section id="start">
+  <div class="wrap">
+    <p class="eyebrow">First things first</p>
+    <h2>Getting started</h2>
+    <p class="lede">Everything you change is private until you publish it — so there's no risk in clicking around and trying things.</p>
+    <div class="steps">
+      <div class="step"><div class="num"></div><div><h3>Sign in</h3><p>Go to <code>/login</code> and enter the email and password you were sent.</p></div></div>
+      <div class="step"><div class="num"></div><div><h3>Check your progress</h3><p>Your home screen shows a setup checklist — Business Details, Categories, Products, Gallery, SEO, Published. It fills in as you go; nothing needs to be done in order.</p></div></div>
+      <div class="step"><div class="num"></div><div><h3>Make changes freely</h3><p>Add products, edit your details, upload photos — none of it goes live until you hit Publish.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="tour">
+  <div class="wrap">
+    <p class="eyebrow">The full tour</p>
+    <h2>What each part of your dashboard does</h2>
+    <p class="lede">In the order they appear in your menu.</p>
+    <div class="card-grid">
+      <div class="card"><h3>📊 Analytics</h3><p>How many people have enquired recently, and how many products and categories you have. A simple day-by-day chart of enquiries.</p></div>
+      <div class="card"><h3>🎨 Website</h3><p>Pick which of your three designs is active, choose which sections show (Products, Gallery, Offers, and so on), and set what your two main buttons do — call, WhatsApp, jump to a section, or a link of your choice.</p></div>
+      <div class="card"><h3>🏬 Business Details</h3><p>Your name, phone, WhatsApp, hours, address, Google Maps link, Instagram — everything that appears on your site's contact info.</p></div>
+      <div class="card"><h3>🗂️ Categories</h3><p>Group your products — "Cold Pressed Oils", "Sarees Under ₹1,500", whatever makes sense for your shop. Reorder or hide any of them any time.</p></div>
+      <div class="card"><h3>📦 Products</h3><p>Add products one at a time, or all at once from a spreadsheet (<strong>Upload in Bulk</strong>). Each one can have a photo, price, an offer price, and a stock count.</p></div>
+      <div class="card"><h3>📖 Catalogue</h3><p>A shareable page listing your products by category — pick which categories appear and whether prices show. Updates itself as your products change.</p></div>
+      <div class="card"><h3>🖼️ Gallery</h3><p>Upload photos of your shop, your products in use, events — whatever helps customers picture the place.</p></div>
+      <div class="card"><h3>🏷️ Offers</h3><p>A limited-time deal with a start and end date. It appears and disappears from your site automatically — you don't have to remember to take it down.</p></div>
+      <div class="card"><h3>💸 Discounts</h3><p>An always-on discount (like "10% off, code SAVE10") shown as a small banner on your site — no date range needed.</p></div>
+      <div class="card"><h3>📣 Campaigns</h3><p>Write a message once, then send it over WhatsApp to anyone who's enquired with you before — one tap per person.</p></div>
+      <div class="card"><h3>💬 Messages</h3><p>Every enquiry submitted through your site lands here, with one-tap Call and WhatsApp buttons to reply.</p></div>
+      <div class="card"><h3>🔍 SEO</h3><p>Helps people searching Google find you. Leave it blank and use "Suggest with AI" for a starting draft — always worth a quick read before saving.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="publish">
+  <div class="wrap">
+    <p class="eyebrow">Going live</p>
+    <h2>How publishing works</h2>
+    <p class="lede">Two separate things are always true: what you've <em>saved</em>, and what's actually <em>live</em> for visitors. Publishing is what moves one to the other.</p>
+    <div class="steps">
+      <div class="step"><div class="num"></div><div><h3>Edit anything, any time</h3><p>Changes are saved as you go, but visitors to your site won't see them yet.</p></div></div>
+      <div class="step"><div class="num"></div><div><h3>Hit Publish (in Settings)</h3><p>This makes everything you've changed go live at once. You'll see how many changes are waiting before you publish.</p></div></div>
+      <div class="step"><div class="num"></div><div><h3>Check History any time</h3><p>Every publish is saved as a version — useful if you ever want to see what changed and when.</p></div></div>
+    </div>
+    <div class="callout">
+      <p>🔒 If Settings shows publishing as locked, that just means we need to switch it on for your account — message us and we'll turn it on.</p>
+    </div>
+  </div>
+</section>
+
+<section id="faq" style="border-bottom:none;">
+  <div class="wrap">
+    <p class="eyebrow">Common questions</p>
+    <h2>Questions people ask</h2>
+    <details>
+      <summary>I made changes but my website still looks the same</summary>
+      <p>Changes are saved as drafts first — go to Settings and hit Publish to make them visible to visitors.</p>
+    </details>
+    <details>
+      <summary>Why can't I click Publish?</summary>
+      <p>Publishing may need to be switched on for your account first — reach out to us at <span class="contact-links"><a href="tel:+917418260995">📞 Call</a><a href="https://wa.me/917418260995" target="_blank" rel="noopener">💬 WhatsApp</a></span> and we'll enable it.</p>
+    </details>
+    <details>
+      <summary>How do I add a photo to a product?</summary>
+      <p>Go to Products, open the product (or add a new one), and use the image upload field. JPG, PNG or WEBP files under 5MB work best.</p>
+    </details>
+    <details>
+      <summary>I forgot my password</summary>
+      <p>Message us at <span class="contact-links"><a href="tel:+917418260995">📞 Call</a><a href="https://wa.me/917418260995" target="_blank" rel="noopener">💬 WhatsApp</a></span> and we'll reset it for you.</p>
+    </details>
+    <details>
+      <summary>Can I have my own domain name, like www.myshop.com?</summary>
+      <p>Yes — talk to us and we'll connect it. You won't need to touch any technical DNS settings yourself.</p>
+    </details>
+  </div>
+</section>
+
+<footer>Need help with anything not covered here? Reach us at <span class="contact-links"><a href="tel:+917418260995">📞 74182 60995</a><a href="https://wa.me/917418260995" target="_blank" rel="noopener">💬 WhatsApp</a></span>.</footer>
+
+</body>
+</html>

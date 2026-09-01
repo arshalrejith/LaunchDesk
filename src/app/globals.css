@@ -1,0 +1,391 @@
+@import "tailwindcss";
+
+:root {
+  /* Neutral scale — cool gray, Linear/Vercel-style */
+  --gray-50: #fafafa;
+  --gray-100: #f4f4f5;
+  --gray-150: #ececee;
+  --gray-200: #e4e4e7;
+  --gray-300: #d4d4d8;
+  --gray-400: #a1a1aa;
+  --gray-500: #71717a;
+  --gray-600: #52525b;
+  --gray-700: #3f3f46;
+  --gray-800: #27272a;
+  --gray-900: #18181b;
+  --gray-950: #0a0a0b;
+
+  /* Accent — indigo */
+  --accent-50: #eef2ff;
+  --accent-100: #e0e7ff;
+  --accent-200: #c7d2fe;
+  --accent-400: #818cf8;
+  --accent-500: #6366f1;
+  --accent-600: #4f46e5;
+  --accent-700: #4338ca;
+
+  --success-500: #10b981;
+  --success-50: #ecfdf5;
+  --warning-500: #f59e0b;
+  --warning-50: #fffbeb;
+  --danger-500: #ef4444;
+  --danger-50: #fef2f2;
+
+  --background: #ffffff;
+  --foreground: var(--gray-900);
+  --surface: #ffffff;
+  --surface-muted: var(--gray-50);
+  --border-subtle: var(--gray-200);
+  --border-strong: var(--gray-300);
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.06);
+  --shadow-md: 0 4px 12px -2px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  --shadow-lg: 0 12px 32px -8px rgb(0 0 0 / 0.12), 0 4px 8px -4px rgb(0 0 0 / 0.06);
+
+  /* Dedicated (non-gray-scale) tokens for the solid "primary" button and
+     anything else that needs to flip polarity — not derived from --gray-900,
+     because that token itself flips in dark mode and would wash out to
+     white-on-white. */
+  --inverse-bg: var(--gray-900);
+  --inverse-bg-hover: var(--gray-800);
+  --inverse-fg: #ffffff;
+
+  color-scheme: light;
+
+  /* Visual Page Builder editor chrome */
+  --builder-bg: #f6f7f9;
+  --builder-toolbar: #ffffff;
+  --builder-panel: #ffffff;
+  --builder-canvas: #eef0f3;
+  --builder-surface: #ffffff;
+  --builder-control-bg: #f4f4f7;
+  --builder-control-active: #e8e8ed;
+  --builder-border: #d7d7dd;
+  --builder-text: #18181b;
+  --builder-muted: #60606a;
+  --builder-subtle: #8a8a94;
+  --builder-warning-bg: #78350f;
+  --builder-warning-text: #fef3c7;
+  --builder-info-bg: #f0f9ff;
+  --builder-info-border: #bae6fd;
+  --builder-info-text: #0369a1;
+}
+
+/* Dark theme — same token names, remapped values. Toggled via .dark on <html>. */
+.dark {
+  --gray-50: #131316;
+  --gray-100: #1a1a1e;
+  --gray-150: #202024;
+  --gray-200: #27272b;
+  --gray-300: #34343a;
+  --gray-400: #6b6b74;
+  --gray-500: #8f8f99;
+  --gray-600: #b4b4bd;
+  --gray-700: #d4d4db;
+  --gray-800: #e8e8ec;
+  --gray-900: #f6f6f8;
+  --gray-950: #ffffff;
+
+  --accent-50: #1b1c33;
+  --accent-100: #26264a;
+  --accent-200: #363670;
+  --accent-400: #8b93fb;
+  --accent-500: #818cf8;
+  --accent-600: #a5abfa;
+  --accent-700: #c7cbfc;
+
+  --success-500: #34d399;
+  --success-50: #0d2820;
+  --warning-500: #fbbf24;
+  --warning-50: #2c220a;
+  --danger-500: #f87171;
+  --danger-50: #2c1414;
+
+  --background: #0b0b0d;
+  --foreground: var(--gray-900);
+  --surface: #17171a;
+  --surface-muted: #0e0e10;
+  --border-subtle: var(--gray-200);
+  --border-strong: var(--gray-300);
+
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.24);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.32), 0 1px 2px -1px rgb(0 0 0 / 0.28);
+  --shadow-md: 0 4px 12px -2px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 12px 32px -8px rgb(0 0 0 / 0.5), 0 4px 8px -4px rgb(0 0 0 / 0.3);
+
+  /* Flip polarity here too: in dark mode the "inverse" button should be a
+     light chip with dark text, not a white-on-white ghost. */
+  --inverse-bg: var(--gray-900);
+  --inverse-bg-hover: var(--gray-800);
+  --inverse-fg: #0b0b0d;
+
+  color-scheme: dark;
+}
+
+/* Editor chrome follows the global theme, including its controls and side panels. */
+.dark {
+  --builder-bg: #0b0b0e;
+  --builder-toolbar: #17171b;
+  --builder-panel: #131317;
+  --builder-canvas: #202025;
+  --builder-surface: #1b1b20;
+  --builder-control-bg: #222228;
+  --builder-control-active: #2b2b32;
+  --builder-border: #34343b;
+  --builder-text: #f5f5f7;
+  --builder-muted: #b4b4bd;
+  --builder-subtle: #777781;
+  --builder-warning-bg: #5b2a0b;
+  --builder-warning-text: #fde68a;
+  --builder-info-bg: #10232e;
+  --builder-info-border: #164e63;
+  --builder-info-text: #7dd3fc;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* Smooth, cheap theme transition — only on the properties that actually
+   change color, never on layout/transform, so toggling never causes jank. */
+body,
+.card,
+.btn,
+.input,
+aside,
+header,
+main {
+  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+
+* {
+  border-color: var(--border-subtle);
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--surface-muted);
+  color: var(--foreground);
+  font-family: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  letter-spacing: -0.011em;
+}
+
+::selection {
+  background: var(--accent-100);
+  color: var(--accent-700);
+}
+
+/* Focus ring — consistent, accessible */
+:focus-visible {
+  outline: 2px solid var(--accent-500);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--gray-300);
+  border-radius: 999px;
+  border: 2px solid var(--surface-muted);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gray-400);
+}
+
+/* Shared component primitives, referenced across dashboard/admin pages */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: var(--radius-md);
+  font-size: 0.8125rem;
+  font-weight: 550;
+  padding: 0.5rem 0.875rem;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease, box-shadow 120ms ease;
+  white-space: nowrap;
+}
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--inverse-bg);
+  color: var(--inverse-fg);
+  box-shadow: var(--shadow-xs);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--inverse-bg-hover);
+}
+
+.btn-accent {
+  background: var(--accent-600);
+  color: #fff;
+  box-shadow: var(--shadow-xs);
+}
+.btn-accent:hover:not(:disabled) {
+  background: var(--accent-700);
+}
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--gray-700);
+  border: 1px solid var(--border-strong);
+}
+.btn-secondary:hover:not(:disabled) {
+  background: var(--gray-50);
+  color: var(--gray-900);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--gray-500);
+}
+.btn-ghost:hover:not(:disabled) {
+  background: var(--gray-100);
+  color: var(--gray-900);
+}
+
+.input {
+  width: 100%;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--gray-900);
+  box-shadow: var(--shadow-xs);
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+.input::placeholder {
+  color: var(--gray-400);
+}
+.input:focus {
+  outline: none;
+  border-color: var(--accent-500);
+  box-shadow: 0 0 0 3px var(--accent-100);
+}
+
+.label {
+  font-size: 0.75rem;
+  font-weight: 550;
+  color: var(--gray-600);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 999px;
+  padding: 0.1875rem 0.625rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+.badge-success { background: var(--success-50); color: #047857; }
+.badge-warning { background: var(--warning-50); color: #b45309; }
+.badge-danger  { background: var(--danger-50); color: #b91c1c; }
+.badge-neutral { background: var(--gray-100); color: var(--gray-600); }
+
+/* ---------------------------------------------------------------------- */
+/* Lightweight animation system                                            */
+/* Pure CSS, GPU-friendly (opacity/transform only), so it stays fast even  */
+/* on long dashboard pages with many cards. Respects reduced-motion.       */
+/* ---------------------------------------------------------------------- */
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to { background-position: 200% 0; }
+}
+
+.animate-fade-in { animation: fade-in 320ms ease both; }
+.animate-rise-in { animation: rise-in 380ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-scale-in { animation: scale-in 220ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* Stagger helper — pair with .animate-rise-in on a list of siblings */
+.stagger-1 { animation-delay: 40ms; }
+.stagger-2 { animation-delay: 80ms; }
+.stagger-3 { animation-delay: 120ms; }
+.stagger-4 { animation-delay: 160ms; }
+.stagger-5 { animation-delay: 200ms; }
+.stagger-6 { animation-delay: 240ms; }
+
+.skeleton {
+  background: linear-gradient(90deg, var(--gray-100) 25%, var(--gray-150) 37%, var(--gray-100) 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+/* Interactive lift — for cards/rows that are clickable */
+.hover-lift {
+  transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 160ms ease, border-color 160ms ease;
+  will-change: transform;
+}
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-strong);
+}
+
+.btn {
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease,
+    box-shadow 120ms ease, transform 120ms ease;
+}
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,411 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// LaunchDesk uses PostgreSQL for production and local development.
+// Supabase provides the hosted PostgreSQL database used in Phase 2.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  CLIENT
+  AGENCY_ADMIN
+}
+
+enum AccountStatus {
+  ACTIVE
+  DISABLED
+}
+
+enum PublishStatus {
+  DRAFT
+  PUBLISHED
+  UNPUBLISHED
+}
+
+enum OfferStatus {
+  ACTIVE
+  SCHEDULED
+  EXPIRED
+}
+
+model RateLimit {
+  key         String   @id
+  hits        Int      @default(0)
+  windowStart BigInt
+  updatedAt   DateTime @updatedAt
+}
+
+model Agency {
+  id      String   @id @default(cuid())
+  name    String
+  clients Client[]
+}
+
+model Client {
+  id        String        @id @default(cuid())
+  slug      String        @unique
+  agencyId  String
+  agency    Agency        @relation(fields: [agencyId], references: [id])
+  status    AccountStatus @default(ACTIVE)
+  users     User[]
+  website   Website?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([agencyId])
+}
+
+model User {
+  id           String  @id @default(cuid())
+  email        String  @unique
+  passwordHash String
+  role         Role
+  clientId     String?
+  client       Client? @relation(fields: [clientId], references: [id])
+  createdAt    DateTime @default(now())
+
+  @@index([clientId])
+}
+
+model Website {
+  id              String         @id @default(cuid())
+  clientId        String         @unique
+  client          Client         @relation(fields: [clientId], references: [id])
+  templateId      String         @default("premium-boutique-01")
+  publishStatus   PublishStatus  @default(DRAFT)
+  previewSlug     String         @unique
+  customDomain    String?        @unique
+  lastPublishedAt DateTime?
+  // Points at the VersionSnapshot the public site currently renders — not
+  // necessarily the most recent one, since Restore can roll back to an older
+  // version without deleting the newer ones. Plain scalar, not a Prisma
+  // relation (no `@relation`), since Website already has the one-to-many
+  // `versions` relation to VersionSnapshot and a second formal relation
+  // between the same two models would need an explicit `@relation` name for
+  // no real benefit here — we only ever look this id up by hand.
+  currentVersionId String?
+  // Agency-controlled gate — independent of role/permissions. A CLIENT user
+  // can always edit and preview; whether their own Publish button actually
+  // works is this flag, typically flipped on once payment clears. The agency
+  // can always publish regardless of this flag.
+  clientPublishEnabled Boolean @default(false)
+
+  @@index([publishStatus])
+
+  settings   Settings?
+  brand      BrandSettings?
+  homepage   HomepageContent?
+  seo        SeoSettings?
+  catalogue  Catalogue?
+  customPage CustomPage?
+
+  sections      SectionToggle[]
+  categories    Category[]
+  products      Product[]
+  offers        Offer[]
+  galleryImages GalleryImage[]
+  mediaAssets   MediaAsset[]
+  versions      VersionSnapshot[]
+  enquiries     Enquiry[]
+  changeLog     ChangeLogEntry[]
+  discounts     Discount[]
+  campaigns     Campaign[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Settings {
+  websiteId    String   @id
+  website      Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  businessName String
+  tagline      String?
+  category     String?
+  description  String?
+  address      String?
+  area         String?
+  city         String?
+  state        String?
+  pincode      String?
+  phone        String?
+  whatsapp     String?
+  email        String?
+  mapsUrl      String?
+  hours        String?
+  instagram    String?
+  facebook     String?
+  youtube      String?
+  linkedin     String?
+  gbpUrl       String?
+
+
+  countryCode  String  @default("IN")
+  currency     String  @default("INR")
+  locale       String  @default("en-IN")
+  phoneCountryCode String @default("+91")
+}
+
+model BrandSettings {
+  websiteId      String  @id
+  website        Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  logoAssetId    String?
+  faviconAssetId String?
+  primaryColor   String?
+  secondaryColor String?
+  accentColor    String?
+  backgroundColor String?
+  font           String?
+  themeMode      String?
+  slogan         String?
+  style          String?
+  feel           String?
+}
+
+model HomepageContent {
+  websiteId    String  @id
+  website      Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  heroLayout   String?
+  heroHeadline String?
+  heroSubtitle String?
+  // Each CTA is a (label, link type, link value) triple — see src/lib/linkTargets.ts.
+  // "value" only means something for scroll ("products") and url/whatsapp
+  // (a URL / prefilled message); it's ignored otherwise.
+  primaryCta       String? // button label
+  primaryCtaType   String? // "call" | "whatsapp" | "directions" | "catalogue" | "scroll" | "enquiry" | "url"
+  primaryCtaValue  String?
+  secondaryCta      String?
+  secondaryCtaType  String?
+  secondaryCtaValue String?
+  heroImageId  String?
+
+}
+
+model SectionToggle {
+  id        String  @id @default(cuid())
+  websiteId String
+  website   Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  key       String
+  enabled   Boolean @default(true)
+
+  @@unique([websiteId, key])
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  websiteId   String
+  website     Website   @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  imageAssetId String?
+  order       Int       @default(0)
+  hidden      Boolean   @default(false)
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([websiteId])
+}
+
+model Product {
+  id          String    @id @default(cuid())
+  websiteId   String
+  website     Website   @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
+  name        String
+  shortDesc   String?
+  fullDesc    String?
+  price       Float?
+  offerPrice  Float?
+  unit        String?
+  sku         String?
+  imageAssetId String?
+  additionalImageIds String?  // JSON-encoded string[] for provider-neutral storage
+  available   Boolean   @default(true)
+  stockQty    Int?
+  featured    Boolean   @default(false)
+  tags        String?   // JSON-encoded string[]
+  order       Int       @default(0)
+  hidden      Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([websiteId])
+  @@index([categoryId])
+}
+
+model Catalogue {
+  id               String  @id @default(cuid())
+  websiteId        String  @unique
+  website          Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  title            String?
+  description      String?
+  coverImageAssetId String?
+  showPrices       Boolean @default(true)
+  showDescriptions Boolean @default(true)
+  showWhatsapp     Boolean @default(true)
+  showEnquiry      Boolean @default(true)
+  categoryIds      String? // JSON-encoded string[], ordered
+
+}
+
+// A single free-form page assembled in the Visual Page Builder — an eighth
+// "template" alongside the seven fixed ones, for a client who wants to
+// rearrange sections and rewrite marketing copy directly rather than pick
+// from a fixed layout. Only the Hero/Stats/Features/About/CTA/Divider
+// sections hold freeform copy in sectionsJson; the Products, Gallery, and
+// Contact section types are placeholders in the editor — the actual render
+// always substitutes the website's real Product/GalleryImage/Settings rows
+// (see src/components/builder/sections.tsx and CustomBuilderTemplate), so a
+// merchant can never accidentally publish the demo placeholder items to a
+// real customer.
+model CustomPage {
+  websiteId    String   @id
+  website      Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  accent       String   @default("#6366f1")
+  font         String   @default("Plus Jakarta Sans")
+  sectionsJson String   // JSON-encoded BuilderSection[]
+  updatedAt    DateTime @updatedAt
+}
+
+model MediaAsset {
+  id        String   @id @default(cuid())
+  websiteId String
+  website   Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  kind      String   // logo | product | banner | gallery | category | other
+  url       String   // /uploads/<websiteId>/<file> in local dev
+  width     Int?
+  height    Int?
+  altText   String?
+  createdAt DateTime @default(now())
+
+  @@index([websiteId])
+}
+
+model GalleryImage {
+  id        String   @id @default(cuid())
+  websiteId String
+  website   Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  assetId   String
+  order     Int      @default(0)
+  hidden    Boolean  @default(false)
+  isCover   Boolean  @default(false)
+
+  @@index([websiteId, order])
+}
+
+model Offer {
+  id            String    @id @default(cuid())
+  websiteId     String
+  website       Website   @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  name          String
+  description   String?
+  originalPrice Float?
+  offerPrice    Float?
+  startDate     DateTime?
+  endDate       DateTime?
+  imageAssetId  String?
+  cta           String? // button label
+  ctaType       String? // see src/lib/linkTargets.ts — defaults to "whatsapp" if unset, for existing offers
+  ctaValue      String?
+  whatsappMsg   String?
+  createdAt     DateTime  @default(now())
+
+  @@index([websiteId, startDate])
+}
+
+model SeoSettings {
+  websiteId    String  @id
+  website      Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  title        String?
+  metaDesc     String?
+  keywords     String?
+  serviceAreas String?
+  gbpUrl       String?
+  countryCode  String  @default("IN")
+  currency     String  @default("INR")
+  locale       String  @default("en-IN")
+  phoneCountryCode String @default("+91")
+
+}
+
+model VersionSnapshot {
+  id          String   @id @default(cuid())
+  websiteId   String
+  website     Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  number      Int
+  label       String
+  summary     String   // JSON-encoded string[]
+  contentJson String   // JSON-encoded full snapshot, for restore
+  createdAt   DateTime @default(now())
+  createdBy   String?
+
+  @@index([websiteId, number])
+}
+
+// One row per unpublished change, cleared on each Publish. This is what
+// powers the auto-generated change summary (spec section 39) without needing
+// to diff full JSON snapshots against each other.
+model ChangeLogEntry {
+  id        String   @id @default(cuid())
+  websiteId String
+  website   Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  text      String
+  createdAt DateTime @default(now())
+
+  @@index([websiteId, createdAt])
+}
+
+// Reward-style discount, distinct from the time-boxed Offer model — no start/end
+// window, just an on/off switch and an optional code, shown as a small banner
+// on the public site since there's no cart/checkout to apply it against directly.
+model Discount {
+  id        String   @id @default(cuid())
+  websiteId String
+  website   Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  name      String
+  type      String // "percent" | "flat"
+  value     Float
+  code      String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@index([websiteId])
+}
+
+// A message composed once and sent out over WhatsApp to past enquirers, one
+// click per recipient (no Business API / bulk-send infra here — this turns
+// the enquiry list into an actionable outreach list, honestly, rather than
+// pretending to auto-send anything).
+model Campaign {
+  id        String   @id @default(cuid())
+  websiteId String
+  website   Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  status    String   @default("draft") // draft | sent
+  createdAt DateTime @default(now())
+
+  @@index([websiteId])
+}
+
+model Enquiry {
+  id        String   @id @default(cuid())
+  websiteId String
+  website   Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  name      String?
+  phone     String?
+  message   String?
+  productId String?
+  handled   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([websiteId, createdAt])
+}
