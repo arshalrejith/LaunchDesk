@@ -4,8 +4,8 @@ import { prisma } from "@/lib/prisma";
 import {
   toggleClientStatusAction,
   setCustomDomainAction,
-  deleteClientAction,
 } from "./actions";
+import DeleteClientButton from "./delete-client-button";
 
 export default async function AdminPage() {
   const clients = await prisma.client.findMany({
@@ -174,29 +174,12 @@ export default async function AdminPage() {
                       </button>
                     </form>
 
-                    <form
-                      action={deleteClientAction}
-                      onSubmit={(event) => {
-                        if (
-                          !window.confirm(
-                            `Delete ${
-                              c.website?.settings?.businessName ?? c.slug
-                            } permanently? This cannot be undone.`
-                          )
-                        ) {
-                          event.preventDefault();
-                        }
-                      }}
-                    >
-                      <input type="hidden" name="id" value={c.id} />
-
-                      <button
-                        type="submit"
-                        className="rounded-md border border-red-200 px-2 py-1 text-xs font-semibold text-red-700 hover:bg-red-50"
-                      >
-                        Delete
-                      </button>
-                    </form>
+                    <DeleteClientButton
+                      clientId={c.id}
+                      clientName={
+                        c.website?.settings?.businessName ?? c.slug
+                      }
+                    />
                   </div>
                 </td>
               </tr>
